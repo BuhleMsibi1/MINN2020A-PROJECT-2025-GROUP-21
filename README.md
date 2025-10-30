@@ -173,4 +173,28 @@ login_page = """
       background-color: #95bfa2;
        }
   </style>
+  </head>
+<body>
+  <div class="login-container">
+    <h3 class="text-center mb-4 text-light">African Critical Minerals App</h3>
+    <form method="POST">
+      <input class="form-control mb-3" name="username" placeholder="Username" required>
+      <input class="form-control mb-3" type="password" name="password" placeholder="Password" required>
+      <select class="form-select mb-3" name="role" required>
+        <option value="">-- Choose your role --</option>
+        <option value="Administrator">Administrator</option>
+        <option value="Investor">Investor</option>
+        <option value="Researcher">Researcher</option>
+        <option value="Developer">Developer</option>
+      </select>
+      <button class="btn btn-success w-100" type="submit">Login</button>
+      {% if error %}
+        <div class="alert alert-danger mt-3">{{ error }}</div>
+      {% endif %}
+    </form>
+  </div>
+</body>
+</html>
+"""
+  
 
