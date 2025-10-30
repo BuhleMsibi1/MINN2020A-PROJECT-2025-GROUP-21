@@ -132,3 +132,45 @@ def dashboard():
 
         db.session.add_all(country_info)
         db.session.commit()
+        # HTML TEMPLATES
+
+login_page = """
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Login</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #2f3e46;
+      color: #ffffff;
+      font-family: Arial, sans-serif;
+    }
+    .login-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 7% auto;
+      background-color: #354f52;
+      padding: 30px;
+      border-radius: 12px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.4);
+    }
+    input, select {
+      background-color: #52796f;
+      color: #ffffff;
+      border: none;
+    }
+    input::placeholder {
+      color: #dcdcdc;
+    }
+    .btn-success {
+      background-color: #84a98c;
+      border: none;
+      color: #2f3e46;
+      font-weight: bold;
+    }
+    .btn-success:hover {
+      background-color: #95bfa2;
+       }
+  </style>
+
