@@ -192,7 +192,7 @@ login_page = """
         <div class="alert alert-danger mt-3">{{ error }}</div>
       {% endif %}
     </form>
-  </div>
+ </div>
 </body>
 </html>
 """
@@ -350,10 +350,10 @@ dashboard_page = """
             </ul>
           </li>
           {% endif %}
-          <li class="nav-item"><form action="{{ url_for('logout') }}" method="GET"><button class="btn btn-danger btn-sm mt-2">Logout</button></form></li>
+          <li class="nav-item"><form action="{{ url_for('logout') }}" method="GET"><button class="btn btn-danger btn-sm mt-2">Logout</button></form></li>    
         </ul>
       </div>
-    </div>
+  </div>
   </nav>
 
   <div class="container mt-4">
