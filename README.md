@@ -197,4 +197,264 @@ login_page = """
 </html>
 """
   
+#DASHBOARD PAGE 
+
+dashboard_page = """ 
+<!DOCTYPE html>
+<html>
+<head>
+  <title>Dashboard</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    /* GLOBAL OVER ALL THEME */
+    body {
+      background-color: #2f3e46; /* dark blue-gray */
+      color: #ffffff;
+      font-family: 'Segoe UI', Arial, sans-serif;
+    }
+
+    /*  NAVVIGATION BAR */
+    .navbar {
+      background-color: #1e2b2f !important;
+      border-bottom: 3px solid #d4af37;
+      box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+    }
+    .navbar-brand {
+      color: #d4af37 !important;
+      font-weight: 700;
+      letter-spacing: 1px;
+    }
+    .navbar .nav-link, .navbar .btn {
+      color: #ffffff !important;
+    }
+    .navbar .dropdown-menu {
+      background-color: #52734d;
+      border: none;
+    }
+    .navbar .dropdown-item {
+      color: #ffffff;
+    }
+    .navbar .dropdown-item:hover {
+      background-color: #d4af37;
+      color: #2f3e46;
+    }
+
+    /* CONTAINER */
+    .container {
+      background-color: #354f52;
+      border-radius: 12px;
+      padding: 30px;
+      margin-top: 30px;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.3);
+    }
+
+    h3, h4 {
+      color: #ffffff;
+      font-weight: bold;
+    }
+
+    h4 {
+      margin-top: 40px;
+      border-left: 5px solid #d4af37;
+      padding-left: 10px;
+    }
+
+    hr {
+      border-top: 1px solid #d4af37;
+    }
+
+    /* TABLES APPEARANCE */
+    table {
+      background-color: #ffffff;
+      color: #2f3e46;
+      border-radius: 8px;
+      overflow: hidden;
+    }
+    thead {
+      background-color: #52734d;
+      color: #ffffff;
+    }
+    tbody tr:nth-child(even) {
+      background-color: #f2f2f2;
+    }
+
+    /* BUTTONS APPEARANCE */
+    .btn-success {
+      background-color: #52734d;
+      border: none;
+    }
+    .btn-success:hover {
+      background-color: #435e40;
+    }
+
+    .btn-primary {
+      background-color: #ffffff;
+      border: none;
+      color: #2f3e46;
+      font-weight: 600;
+    }
+    .btn-primary:hover {
+      background-color: #b8952e;
+    }
+
+    .btn-danger {
+      background-color: #b93e3e;
+      border: none;
+    }
+    .btn-danger:hover {
+      background-color: #922e2e;
+    }
+
+    .btn-warning {
+      background-color: #d4af37;
+      border: none;
+      color: #2f3e46;
+      font-weight: 600;
+    }
+    .btn-warning:hover {
+      background-color: #b8952e;
+    }
+
+    /* ALERTS & IFRAMES */
+    .alert-info {
+      background-color: #e9f5ec;
+      border-color: #52734d;
+      color: #2f3e46;
+    }
+
+    iframe {
+      border: 2px solid #52734d;
+      border-radius: 8px;
+    }
+
+    /* RESPONSE TO SCREEN SIZE */
+    @media (max-width: 768px) {
+      .container { padding: 15px; }
+      h3 { font-size: 1.3rem; }
+      h4 { font-size: 1.1rem; }
+    }
+  </style>
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="#">Critical Minerals</a>
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav ms-auto">
+          {% if session['role'] in ["Administrator", "Developer"] %}
+          <li class="nav-item dropdown">
+            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">View As</a>
+            <ul class="dropdown-menu dropdown-menu-end">
+              <li><form action="{{ url_for('view_as', role='Researcher') }}" method="POST"><button class="dropdown-item" type="submit">Researcher</button></form></li>
+              <li><form action="{{ url_for('view_as', role='Investor') }}" method="POST"><button class="dropdown-item" type="submit">Investor</button></form></li>
+            </ul>
+          </li>
+          {% endif %}
+          <li class="nav-item"><form action="{{ url_for('logout') }}" method="GET"><button class="btn btn-danger btn-sm mt-2">Logout</button></form></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <div class="container mt-4">
+    {% if session.get('original_role') %}
+    <div class="alert alert-info text-center">
+      You are viewing as {{ session['role'] }}.
+      <form action="{{ url_for('return_admin') }}" method="POST" style="display:inline;">
+        <button class="btn btn-warning btn-sm">⬅ Return to {{ session['original_role'] }} View</button>
+      </form>
+    </div>
+    {% endif %}
+
+    <h3>Welcome, {{ session['username'] }} ({{ session['role'] }})</h3>
+    <hr>
+
+    {% if session['role'] in ["Administrator", "Developer"] %}
+    <h4>Manage Users</h4>
+    <table class="table table-striped">
+      <thead><tr><th>ID</th><th>Username</th><th>Role</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for u in users %}
+      <tr><td>{{ u.id }}</td><td>{{ u.username }}</td><td>{{ u.role }}</td>
+        <td>{% if u.username != session['username'] %}<form method="POST" action="{{ url_for('delete_user', id=u.id) }}"><button class="btn btn-danger btn-sm">Delete</button></form>{% endif %}</td>
+      </tr>{% endfor %}
+      </tbody>
+    </table>
+
+    <form method="POST" action="{{ url_for('add_user') }}" class="row g-3 mb-4">
+      <div class="col-md-3"><input name="username" class="form-control" placeholder="Username" required></div>
+      <div class="col-md-3"><input type="password" name="password" class="form-control" placeholder="Password" required></div>
+      <div class="col-md-3"><select name="role" class="form-select" required><option value="">Choose Role</option><option>Administrator</option><option>Investor</option><option>Researcher</option><option>Developer</option></select></div>
+      <div class="col-md-3"><button class="btn btn-success w-100">Add User</button></div>
+    </form>
+
+    <h4>Manage Minerals</h4>
+    <table class="table table-bordered">
+      <thead><tr><th>ID</th><th>Country</th><th>Mineral</th><th>Quantity</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for m in minerals %}
+      <tr><td>{{ m.id }}</td><td>{{ m.country }}</td><td>{{ m.mineral }}</td><td>{{ m.quantity }}</td>
+        <td><form method="POST" action="{{ url_for('delete_mineral', id=m.id) }}"><button class="btn btn-danger btn-sm">Delete</button></form></td>
+      </tr>{% endfor %}
+      </tbody>
+    </table>
+
+    <form method="POST" action="{{ url_for('add_mineral') }}" class="row g-3 mb-4">
+      <div class="col-md-2"><input name="country" class="form-control" placeholder="Country" required></div>
+      <div class="col-md-2"><input name="mineral" class="form-control" placeholder="Mineral" required></div>
+      <div class="col-md-2"><input name="quantity" type="number" class="form-control" placeholder="Quantity" required></div>
+      <div class="col-md-2"><input name="lat" step="0.0001" type="number" class="form-control" placeholder="Latitude" required></div>
+      <div class="col-md-2"><input name="lon" step="0.0001" type="number" class="form-control" placeholder="Longitude" required></div>
+      <div class="col-md-2"><button class="btn btn-success w-100">Add</button></div>
+    </form>
+
+    <h4>Country Profiles</h4>
+    <table class="table table-bordered">
+      <thead><tr><th>Country</th><th>GDP (Billion USD)</th><th>Key Projects</th><th>Notes</th><th>Action</th></tr></thead>
+      <tbody>
+      {% for c in country_profiles %}
+      <tr>
+        <td>{{ c.country }}</td>
+        <td>{{ "%.1f"|format(c.gdp) if c.gdp else "N/A" }}</td>
+        <td>{{ c.key_projects }}</td>
+        <td>{{ c.notes }}</td>
+        <td><form method="POST" action="{{ url_for('delete_country', id=c.id) }}"><button class="btn btn-danger btn-sm">Delete</button></form></td>
+      </tr>{% endfor %}
+      </tbody>
+    </table>
+
+    <form method="POST" action="{{ url_for('add_country') }}" class="row g-3 mb-4">
+      <div class="col-md-3"><input name="country" class="form-control" placeholder="Country" required></div>
+      <div class="col-md-2"><input name="gdp" type="number" step="0.1" class="form-control" placeholder="GDP (Billion USD)"></div>
+      <div class="col-md-3"><input name="key_projects" class="form-control" placeholder="Key Projects"></div>
+      <div class="col-md-3"><input name="notes" class="form-control" placeholder="Notes"></div>
+      <div class="col-md-1"><button class="btn btn-success w-100">Add</button></div>
+    </form>
+    {% endif %}
+
+    {% if session['role'] in ["Researcher", "Investor"] %}
+    <h4>Country Profiles</h4>
+    <table class="table table-bordered">
+      <thead><tr><th>Country</th><th>GDP (Billion USD)</th><th>Key Projects</th><th>Notes</th></tr></thead>
+      <tbody>
+      {% for c in country_profiles %}
+      <tr><td>{{ c.country }}</td><td>{{ "%.1f"|format(c.gdp) if c.gdp else "N/A" }}</td><td>{{ c.key_projects }}</td><td>{{ c.notes }}</td></tr>{% endfor %}
+      </tbody>
+    </table>
+
+    <form method="GET" action="{{ url_for('dashboard') }}" class="row g-3 mb-4">
+      <div class="col-md-6"><select name="country" class="form-select"><option value="">All Countries</option>{% for c in countries %}<option value="{{ c }}" {% if request.args.get('country') == c %}selected{% endif %}>{{ c }}</option>{% endfor %}</select></div>
+      <div class="col-md-6"><select name="mineral" class="form-select"><option value="">All Minerals</option>{% for m in mineral_types %}<option value="{{ m }}" {% if request.args.get('mineral') == m %}selected{% endif %}>{{ m }}</option>{% endfor %}</select></div>
+      <div class="col-md-12 mt-2"><button class="btn btn-primary w-100">Apply Filters</button></div>
+    </form>
+
+    <iframe src="{{ url_for('map_page', country=request.args.get('country'), mineral=request.args.get('mineral')) }}" width="100%" height="500"></iframe>
+    <h4 class="mt-5">Interactive Mineral Chart</h4>
+    <iframe src="{{ url_for('charts_page', country=request.args.get('country'), mineral=request.args.get('mineral')) }}" width="100%" height="550"></iframe>
+    {% endif %}
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>
+"""
 
